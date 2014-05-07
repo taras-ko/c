@@ -1,0 +1,6 @@
+#include <rwlines.h>
+
+main()
+{
+	;
+}
