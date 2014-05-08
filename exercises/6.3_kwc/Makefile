@@ -1,15 +1,18 @@
-SOURCES := src/kwc.c
-OBJS := src/kwc.o
+sources := $(wildcard src/*.c)
+objects := $(sources:.c=.o)
 
-CFLAGS := -g \
-		  -Iinclude
+CC = gcc
 
-PROGRAM := kwc
+CFLAGS = -g \
+		-Iinclude
 
-all: $(PROGRAM)
+.c.o:
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$(PROGRAM): $(OBJS)
-	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS)
+all: kwc
+
+kwc: $(objects)
+	$(CC) $(CFLAGS) -o kwc $(objects)
 
 clean:
 	rm kwc src/*.o
