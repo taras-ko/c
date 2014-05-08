@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <errno.h>
+#include <wchar.h>
 
 extern FILE *stream;
 
@@ -14,8 +15,8 @@ typedef enum {
 
 static TokenType detect_token()
 {
-	char c;
-	c = fgetc(stream);
+	wint_t c;
+	c = fgetwc(stream);
 	if (isspace(c))
 		return space;
 	switch (c) {
@@ -24,13 +25,13 @@ static TokenType detect_token()
 		case '"':
 			return string_constant;
 		case '/':
-			c = fgetc(stream);
+			c = fgetwc(stream);
 			if (c == '/')
 				return oneline_comment;
 			if (c == '*')
 				return multiline_comment;
 		default:
-			ungetc(c, stream);
+			ungetwc(c, stream);
 			return word;
 	}
 }
@@ -40,8 +41,8 @@ static void skip_token(TokenType tok)
 	if (tok == word)
 		return;
 
-	char c;
-	while ((c = fgetc(stream)) != EOF)
+	wint_t c;
+	while ((c = fgetwc(stream)) != EOF)
 		switch (tok) {
 			case directive:
 			case oneline_comment:
@@ -53,28 +54,32 @@ static void skip_token(TokenType tok)
 					goto _exit;
 				break;
 			case multiline_comment: {
-				char next_c;
-				if (c == '*' && (next_c = fgetc(stream)) == '/')
+				wint_t next_c;
+				if (c == '*' && (next_c = fgetwc(stream)) == '/')
 					goto _exit;
 				else
-					ungetc(next_c, stream);
+					ungetwc(next_c, stream);
 				break;
 			}
 		}
 
 _exit:
 	if (c == EOF)
-		ungetc(c, stream);
+		ungetwc(c, stream);
 }
 
 /* Reads next word or sym from file stream */
-int getword(char *word, int lim)
+int getword(wint_t *word, int lim)
 {
-	skip_token(detect_token());
+	//skip_token(detect_token());
 
-	char c;
-	while (!isspace(c = fgetc(stream)) && lim > 0 && c != EOF)
-		if (isalnum(c) || c == '(') {
+	wint_t c;
+	while (iswblank(c = fgetwc(stream)) && c != EOF)
+		;
+	while (!iswblank(c = fgetwc(stream)) && lim > 0 && c != EOF) {
+#if 0
+		if (iswalnum(c) || c == '(') {
+#endif
 			*word++ = c;
 			lim--;
 		}
@@ -85,9 +90,9 @@ int getword(char *word, int lim)
 }
 
 /* determine if word is c function */
-int isfunc(char *word)
+int isfunc(wint_t *word)
 {
-	char *p = word;
+	wint_t *p = word;
 	for ( ; *p != '\0'; p++)
 		if (*p == '(')
 			return 1;

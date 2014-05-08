@@ -1,9 +1,11 @@
 /* kwc - Keyword Counter */
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include <string.h>
 #include <errno.h>
+#include <wchar.h>
+#include <wctype.h>
+#include <locale.h>
 
 #include <bintree.h>
 #include <parser.h>
@@ -53,14 +55,17 @@ int main(int argc, char *argv[])
 	parse_args(argc, argv);
 
 	struct tnode *root;
-	char word[MAXWORD];
+	wint_t word[MAXWORD];
 
+	setlocale(LC_ALL, "utf8");
 	root = NULL;
 	while (getword(word, MAXWORD)) {
+#if 0
 		if (isfunc(word))
 			continue;
-		else if (isalpha(word[0])) //&& binsearch(word, keytab, NKEYS)) {
-			root = addtree(root, word);
+		else if (iswalpha(word[0]))
+#endif
+		root = addtree(root, word);
 	}
 
 	treeprint(root);

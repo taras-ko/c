@@ -2,7 +2,7 @@
 #define TREE_H
 
 struct tnode {
-	char *word;
+	wint_t *word;
 	int count;
 	struct tnode *left;
 	struct tnode *right;

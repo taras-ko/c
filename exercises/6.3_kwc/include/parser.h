@@ -1,2 +1,2 @@
-int getword(char *word, int lim);
-int isfunc(char *word);
+int getword(wint_t *word, int lim);
+int isfunc(wint_t *word);
