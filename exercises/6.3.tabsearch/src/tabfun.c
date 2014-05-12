@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <stringlocal.h>
-#include <tblfun.h>
+#include <string.h>
+#include <tabfun.h>
 #include <debug.h>
 
 #define HASHSIZE 101
@@ -35,7 +35,7 @@ struct nlist *lookup(char *name)
 	return NULL;	   /* couldn't found element */
 }
 
-/* install: puts record "name + definition "
+/* install: puts record "name + definition"
  *		(name, defn) in the hastab
  */
 struct nlist *install(struct defn *dp)
@@ -45,7 +45,7 @@ struct nlist *install(struct defn *dp)
 
 	if ((np = lookup(dp->name)) == NULL) { /* name not found */
 		np = (struct nlist *) malloc(sizeof(*np));
-		if (np == NULL || (np->d.name = _strdup(dp->name)) == NULL)
+		if (np == NULL || (np->d.name = strdup(dp->name)) == NULL)
 			return NULL;
 		hashval = hash(dp->name);
 		np->next = hashtab[hashval];
@@ -53,7 +53,7 @@ struct nlist *install(struct defn *dp)
 		debug_print("%s %s\n", dp->name, dp->val);
 	} else /* already in the table */
 		free((void *) np->d.val); /* deletion of the old defenition */
-	if ((np->d.val = _strdup(dp->val)) == NULL)
+	if ((np->d.val = strdup(dp->val)) == NULL)
 		return NULL;
 	return np;
 }
