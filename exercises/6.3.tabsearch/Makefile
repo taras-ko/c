@@ -1,6 +1,7 @@
 CC = g++
 
 sources := $(wildcard src/*.c)
+sources := $(filter-out src/tabfun.c, $(sources))
 objects := $(sources:.c=.o)
 
 LPATH := ../../libc

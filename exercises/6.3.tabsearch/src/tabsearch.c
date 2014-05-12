@@ -63,11 +63,9 @@ const idefstream& idefstream::operator>>(defn& def) {
 
 	std::string word;
 	while (getword(word))
-		if (word == "#define") {
-			def.name = "found definition";
-			def.val = "found definition";
-			break;
-		}
+		if (word == "#define")
+			if (getword(def.name) && getword(def.val))
+				break;
 
 	return *this;
 }
